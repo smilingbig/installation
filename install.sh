@@ -82,6 +82,8 @@ install_package kitty
 # different OS'es
 install_package ripgrep
 install_package bat 
+install_package shellcheck 
+install_package docker 
 
 # Install pnpm for node management
 # TODO
@@ -96,9 +98,15 @@ install_package tmux
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # Install rustup
-# Needed to install gcc-multilib to get support for rust compilation
+# Needed to install gcc-multilib to get support for rust compilation on older laptop
 install_package gcc-multilib
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+if [[ "$(command -v rustc)" -ne 0 ]]; then
+  echo "Only install rust if it's not installed already"
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    exit 1
+fi
+
 # TODO
 # Not sure if this works
 # Resource to get access to cargo

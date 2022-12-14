@@ -6,3 +6,11 @@ install: install.sh
 
 update: update.sh
 	bash update.sh
+
+docker_setup:
+	docker build -t installtest .
+	docker run -d -p 2022:22 installtest 
+	docker ps
+
+docker_connect: 
+	kitty +kitten ssh test@localhost -p 2022
