@@ -23,6 +23,8 @@ export ZSH_PLUGIN_DIR="$HOME/.zsh"
 # TODO
 # Group apt installs when everything is done
 # Maybe look into rolling up a docker instance so that I can test the installation scripts
+# Move different conditionals out to reusable functions
+# Move colour logging out to reusable fns
 
 # Install Git
 sudo apt update
@@ -89,6 +91,7 @@ install_package docker
 # TODO
 # Write a script that when it finds .nvmrc it uses pnpm to install correct node version
 # https://dev.to/rennycat/pnpm-can-manage-nodejs-version-like-nvm--2ec0
+# pnpm might not support 32bit enviroments.
 curl -fsSL https://get.pnpm.io/install.sh | sh -
 
 # Install Tmux
@@ -101,19 +104,20 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 # Needed to install gcc-multilib to get support for rust compilation on older laptop
 install_package gcc-multilib
 
-if [[ "$(command -v rustc)" -ne 0 ]]; then
-  echo "Only install rust if it's not installed already"
+if [[ "$(which rustc | grep 'not found')" -eq '' ]]; then
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    exit 1
+    # TODO
+    # Not sure if this works
+    # Resource to get access to cargo
+    # source ~/.zshrc
+
+    # Install git-delta via cargo
+    cargo install git-delta
+  else
+		tput setaf 3
+		echo -e "$pkg already installed, skipping."
+		tput sgr0
 fi
-
-# TODO
-# Not sure if this works
-# Resource to get access to cargo
-# source ~/.zshrc
-
-# Install git-delta via cargo
-cargo install git-delta
 
 # TODO
 # Next things to install
@@ -123,8 +127,6 @@ cargo install git-delta
 # TODO
 # Little install script I wrote for automatically setting up stowed dotfiles,
 # probably needs testing
-# This is not currently working though, I think because we ls a folder and
-# maybe we need to cd into that folder isntead when stowing
 git clone $DOTFILES_REPO "$DOTFILES_DIR"
 install_package stow 
 cd "$DOTFILES_DIR" || exit
@@ -132,4 +134,4 @@ cd "$DOTFILES_DIR" || exit
 
 tput setaf 2
 
-echo -e "Things installed."
+echo -e "\n Things installed."
