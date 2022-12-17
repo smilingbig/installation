@@ -109,7 +109,7 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 # Needed to install gcc-multilib to get support for rust compilation on older laptop
 install_package gcc-multilib
 
-if [[ "$(which rustc | grep 'not found')" -eq '' ]]; then
+if [[ "$(which rustup | grep 'not found')" -eq '' ]]; then
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
     # TODO
     # Not sure if this works
