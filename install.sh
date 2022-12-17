@@ -130,6 +130,7 @@ fi
 # Install stow, clone dotfiles repo and setup dotfiles.
 # TODO
 # Redo as a loop
+mkdir "$DOTFILES_DIR"
 git clone $DOTFILES_REPO "$DOTFILES_DIR"
 install_package stow 
 cd "$DOTFILES_DIR" || exit
