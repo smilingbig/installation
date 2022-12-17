@@ -7,6 +7,9 @@ install: install.sh
 update: update.sh
 	bash update.sh
 
+remove: remove.sh
+	bash remove.sh
+
 docker_setup:
 	docker build -t installtest .
 	docker run -d -p 2022:22 installtest 

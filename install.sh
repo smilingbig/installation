@@ -65,12 +65,6 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_PLUGIN_
 git clone https://github.com/zsh-users/zsh-history-substring-search "$ZSH_PLUGIN_DIR/zsh-history-substring-search"
 git clone https://github.com/sindresorhus/pure.git "$ZSH_PLUGIN_DIR/pure"
 
-# Didn't want to pull in entire repo, just grab git and nvm plugins
-# TODO
-# Actually thinking to just grab the alias files and adding them to my own .zsh_aliases
-mkdir "$HOME/.zsh/git"
-curl -o "$HOME/.zsh/git/git.plugin.zsh" https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/plugins/git/git.plugin.zsh 
-
 # Install kitty
 # TODO
 # I should look into installing all deps in a single go, but in first run let's
@@ -86,6 +80,17 @@ install_package ripgrep
 install_package bat 
 install_package shellcheck 
 install_package docker 
+install_package htop 
+install_package jq 
+install_package python3
+install_package ripgrep
+install_package wget
+
+# AWS related installs
+# TODO
+# Might be good to use a prompt for choosing if we should install certain tools
+# like this, incase they're not required.
+install_package awscli 
 
 # Install pnpm for node management
 # TODO
@@ -120,17 +125,15 @@ if [[ "$(which rustc | grep 'not found')" -eq '' ]]; then
 fi
 
 # TODO
-# Next things to install
 # Setup vim
 
 # Install stow, clone dotfiles repo and setup dotfiles.
 # TODO
-# Little install script I wrote for automatically setting up stowed dotfiles,
-# probably needs testing
+# Redo as a loop
 git clone $DOTFILES_REPO "$DOTFILES_DIR"
 install_package stow 
 cd "$DOTFILES_DIR" || exit
-"ls" | grep --invert-match "\.git" | xargs -I{} stow {}
+\ls | grep --invert-match "\.git" | xargs -I{} stow {}
 
 tput setaf 2
 
