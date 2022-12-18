@@ -1,5 +1,11 @@
 #!/bin/bash 
 
+# function is_installed {
+#   if [ command -v dpkg ]; then
+
+#   fi
+# }
+
 function install_package {
 	local pkg=$1
 	
@@ -43,6 +49,7 @@ install_package zsh
 # TODO
 # Switch to zsh without having to restart prompt or maybe have a std option to
 # manually reload after the script is finished.
+# Issue here with switching to zsh
 if [[ $SHELL = "/usr/bin/zsh" ]]; then
 	tput setaf 3
 	echo -e "Already using zsh."
@@ -51,6 +58,7 @@ else
 	chsh -s "$(which zsh)"
 fi
 
+# Directory not being created
 # Create .zsh directory for plugins
 if [[ -d $ZSH_PLUGIN_DIR ]]; then
 	tput setaf 3
@@ -59,6 +67,9 @@ if [[ -d $ZSH_PLUGIN_DIR ]]; then
 else
 	mkdir "$ZSH_PLUGIN_DIR"
 fi
+
+# Make projects directory
+mkdir "$PROJECTS_DIR"
 
 # Zsh plugins
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"
@@ -85,6 +96,7 @@ install_package jq
 install_package python3
 install_package ripgrep
 install_package wget
+install_package curl
 
 # AWS related installs
 # TODO
@@ -109,6 +121,8 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 # Needed to install gcc-multilib to get support for rust compilation on older laptop
 install_package gcc-multilib
 
+# TODO
+# Issue here with rust installation
 if [[ "$(which rustup | grep 'not found')" -eq '' ]]; then
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
     # TODO
@@ -137,5 +151,4 @@ cd "$DOTFILES_DIR" || exit
 \ls | grep --invert-match "\.git" | xargs -I{} stow {}
 
 tput setaf 2
-
 echo -e "\n Things installed."

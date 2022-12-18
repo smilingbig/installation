@@ -4,28 +4,19 @@
 # installed correcty.
 FROM ubuntu:latest
 
-RUN apt-get update && \
-      apt-get -y install sudo bash
+RUN apt-get update 
+RUN apt-get install -y sudo bash openssh-server git
+RUN ln -fs /usr/share/zoneinfo/Europe/London /etc/localtime 
+RUN apt-get install -yq tzdata 
+RUN dpkg-reconfigure -f noninteractive tzdata 
 
-RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 test 
+RUN useradd -rm -d /home/test -s /bin/bash -G sudo -u 1000 test 
 RUN usermod -aG sudo test
 RUN echo 'test:test' | chpasswd
 
-USER test
-WORKDIR /home/test
-
-RUN echo 'test' | sudo -S apt-get update 
-RUN echo 'test' | sudo -S apt-get install -yq tzdata 
-RUN echo 'test' | sudo -S ln -fs /usr/share/zoneinfo/Europe/London /etc/localtime 
-RUN echo 'test' | sudo -S dpkg-reconfigure -f noninteractive tzdata 
-RUN echo 'test' | sudo -S apt-get install openssh-server git -y
-
-ADD install.sh /
-RUN echo 'test' | sudo -S chmod +x /install.sh
-RUN echo 'test' | sudo -S bash -c /install.sh
-
-USER root
 RUN service ssh start
+ADD install.sh /
+RUN chmod +x /install.sh
 
 EXPOSE 69
 
