@@ -1,30 +1,50 @@
 #!/bin/bash 
 
-# function is_installed {
-#   if [ command -v dpkg ]; then
+export DOTFILES_DIR="$HOME/dotfiles"
+export DOTFILES_REPO="https://github.com/smilingbig/.dotfiles.git"
+export PROJECTS_DIR="$HOME/Repos/"
+export ZSH_PLUGIN_DIR="$HOME/.zsh"
 
-#   fi
-# }
+green=$(tput setaf 2)
+normal=$(tput sgr0)
+
+function print_info {
+  printf "${green}%s${normal}" "$1"
+}
+
+function is_installed {
+  [ "$(command -v "$1")" ]
+}
+
+function is_zshshell {
+  [ "$(echo "$SHELL" | grep -c 'zsh')" -gt "1" ]
+}
+
+function is_directory {
+  ! [ -d $! ]
+}
+
+function setup_stow {
+  declare prevpwd
+  prevpwd=$(pwd)
+
+  cd "$DOTFILES_DIR" || exit
+  for d in ./* ; do
+    [ -d "${d}" ] && stow "${d}"
+  done
+  cd "$prevpwd" || exit
+}
 
 function install_package {
 	local pkg=$1
 	
-	if [ $(dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
-		tput setaf 2
-		echo -e "Installing $pkg."
-		tput sgr0
+  if ! [ "$(is_installed "$pkg")" ]; then
+    print_info "Installing $pkg."
 		sudo apt install -y "$pkg"
 	else
-		tput setaf 3
-		echo -e "$pkg already installed, skipping."
-		tput sgr0
+    print_info "$pkg already installed, skipping."
 	fi
 }
-
-export DOTFILES_DIR="$HOME/dotfiles"
-export DOTFILES_REPO="git@github.com:smilingbig/.dotfiles.git"
-export PROJECTS_DIR="$HOME/Repos/"
-export ZSH_PLUGIN_DIR="$HOME/.zsh"
 
 # TODO
 # Group apt installs when everything is done
@@ -50,26 +70,27 @@ install_package zsh
 # Switch to zsh without having to restart prompt or maybe have a std option to
 # manually reload after the script is finished.
 # Issue here with switching to zsh
-if [[ $SHELL = "/usr/bin/zsh" ]]; then
-	tput setaf 3
-	echo -e "Already using zsh."
-	tput sgr0
+
+if is_zshshell; then
+  print_info "Already using zsh."
 else
 	chsh -s "$(which zsh)"
 fi
 
 # Directory not being created
 # Create .zsh directory for plugins
-if [[ -d $ZSH_PLUGIN_DIR ]]; then
-	tput setaf 3
-	echo -e "Already created ${ZSH_PLUGIN_DIR}"
-	tput sgr0
+if is_directory "$ZSH_PLUGIN_DIR"; then
+  print_info "Already created ${ZSH_PLUGIN_DIR}"
 else
 	mkdir "$ZSH_PLUGIN_DIR"
 fi
 
 # Make projects directory
-mkdir "$PROJECTS_DIR"
+if is_directory "$PROJECTS_DIR"; then
+  print_info "Already created ${PROJECTS_DIR}"
+else
+	mkdir "$PROJECTS_DIR"
+fi
 
 # Zsh plugins
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"
@@ -94,7 +115,6 @@ install_package docker
 install_package htop 
 install_package jq 
 install_package python3
-install_package ripgrep
 install_package wget
 install_package curl
 
@@ -102,14 +122,14 @@ install_package curl
 # TODO
 # Might be good to use a prompt for choosing if we should install certain tools
 # like this, incase they're not required.
-install_package awscli 
+# install_package awscli 
 
 # Install pnpm for node management
 # TODO
 # Write a script that when it finds .nvmrc it uses pnpm to install correct node version
 # https://dev.to/rennycat/pnpm-can-manage-nodejs-version-like-nvm--2ec0
 # pnpm might not support 32bit enviroments.
-curl -fsSL https://get.pnpm.io/install.sh | sh -
+# sudo curl -fsSL https://get.pnpm.io/install.sh | sh -
 
 # Install Tmux
 # And setup tmux plugin manager
@@ -123,32 +143,35 @@ install_package gcc-multilib
 
 # TODO
 # Issue here with rust installation
-if [[ "$(which rustup | grep 'not found')" -eq '' ]]; then
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    # TODO
-    # Not sure if this works
-    # Resource to get access to cargo
-    # source ~/.zshrc
+# if [[ "$(which rustup | grep 'not found')" -eq '' ]]; then
+#     curl --insecure --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+#     # TODO
+#     # Not sure if this works
+#     # Resource to get access to cargo
+#     # source ~/.zshrc
 
-    # Install git-delta via cargo
-    cargo install git-delta
-  else
-		tput setaf 3
-		echo -e "$pkg already installed, skipping."
-		tput sgr0
-fi
+#     # Install git-delta via cargo
+#     cargo install git-delta
+#   else
+# 		tput setaf 3
+# 		echo -e "$pkg already installed, skipping."
+# 		tput sgr0
+# fi
 
 # TODO
 # Setup vim
 
 # Install stow, clone dotfiles repo and setup dotfiles.
 # TODO
-# Redo as a loop
-mkdir "$DOTFILES_DIR"
+if is_directory "$DOTFILES_DIR"; then
+  print_info "Already created ${DOTFILES_DIR}"
+else
+	mkdir "$DOTFILES_DIR"
+fi
+
 git clone $DOTFILES_REPO "$DOTFILES_DIR"
 install_package stow 
-cd "$DOTFILES_DIR" || exit
-\ls | grep --invert-match "\.git" | xargs -I{} stow {}
 
-tput setaf 2
-echo -e "\n Things installed."
+setup_stow 
+
+print_info "\n Things installed."

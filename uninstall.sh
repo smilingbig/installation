@@ -25,7 +25,11 @@ rmdir "$PROJECTS_DIR"
 
 # Unstow packages and delete dotfiles
 cd "$DOTFILES_DIR" || exit
-\ls | grep --invert-match "\.git" | xargs -I{} stow --delete {}
+
+for d in * ; do
+  [ -d "${d}" ] && stow --delete "${d}"
+done
+
 rmdir "$DOTFILES_DIR"
 
 sudo apt-get remove -y stow
