@@ -5,11 +5,10 @@ export DOTFILES_REPO="https://github.com/smilingbig/.dotfiles.git"
 export PROJECTS_DIR="$HOME/Repos/"
 export ZSH_PLUGIN_DIR="$HOME/.zsh"
 
-green=$(tput setaf 2)
-normal=$(tput sgr0)
-
 function print_info {
-  printf "${green}%s${normal}" "$1"
+  green='\033[0;32m'
+  clear='\033[0m'
+  echo -e "\n${green}${1}${clear}\n" 
 }
 
 function is_installed {
@@ -21,7 +20,7 @@ function is_zshshell {
 }
 
 function is_directory {
-  ! [ -d $! ]
+  ! [ -d "$1" ]
 }
 
 function setup_stow {
@@ -29,9 +28,16 @@ function setup_stow {
   prevpwd=$(pwd)
 
   cd "$DOTFILES_DIR" || exit
-  for d in ./* ; do
-    [ -d "${d}" ] && stow "${d}"
+
+  print_line "Setup stow"
+
+  for d in * ; do
+    if is_directory "${d}"; then 
+      print_line "Setting up dotfiles for ${d}"
+      stow "${d}"
+    fi
   done
+
   cd "$prevpwd" || exit
 }
 
@@ -174,4 +180,8 @@ install_package stow
 
 setup_stow 
 
-print_info "\n Things installed."
+sudo apt-get autoremove
+sudo apt-get clean
+sudo apt-get autoclean
+
+print_info "Things installed."

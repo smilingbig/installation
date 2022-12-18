@@ -11,17 +11,23 @@ export PROJECTS_DIR="$HOME/Repos/"
 sudo apt-get remove -y git neovim zsh kitty ripgrep bat shellcheck docker htop \
                        jq python3 ripgrep wget curl awscli gcc-multilib 
 
-# Remove pnpm
-pnpm rm --global pnpm
+sudo apt-get autoremove
+sudo apt-get clean
+sudo apt-get autoclean
 
+# TODO
+# Remove pnpm
+# pnpm rm --global pnpm
+
+# TODO
 # Remove rust
-rustup self uninstall
+# rustup self uninstall
 
 # Set bash as main shell
-chsh --newshell "$(which bash)"
+chsh -s "$(which bash)"
 
-rmdir "$ZSH_PLUGIN_DIR"
-rmdir "$PROJECTS_DIR"
+rm -fr "$ZSH_PLUGIN_DIR"
+rm -fr "$PROJECTS_DIR"
 
 # Unstow packages and delete dotfiles
 cd "$DOTFILES_DIR" || exit
@@ -30,6 +36,6 @@ for d in * ; do
   [ -d "${d}" ] && stow --delete "${d}"
 done
 
-rmdir "$DOTFILES_DIR"
+rm -fr "$DOTFILES_DIR"
 
 sudo apt-get remove -y stow

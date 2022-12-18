@@ -1,27 +1,27 @@
 #!/bin/bash 
 
+export PROJECTS_DIR="$HOME/Repos/"
+
 # TODO
 # Update on other os
-sudo apt update
-sudo apt upgrade
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get autoremove
+sudo apt-get clean
+sudo apt-get autoclean
 
-# Update ZSH plugins
-# TODO
-# I should set this up as a loop
-# Also it would maybe be cool if I setup a way to just add the repos and
-# destination directories and they got setup from a single place
-# Zsh plugins
-cd "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting" || exit
-git pull origin main
+# Update all zsh plugins in ZSH_PLUGIN_DIR
+for d in "$ZSH_PLUGIN_DIR"/* ; do
+  [ -d "${d}" ] && git --git-dir="${d}"/.git --work-tree="${d}" pull
+done
 
-cd "$ZSH_PLUGIN_DIR/zsh-history-substring-search" || exit
-git pull origin main
-
-cd "$ZSH_PLUGIN_DIR/pure" || exit
-git pull origin main
+# Update all git repos in PROJECTS_DIR
+for d in "$PROJECTS_DIR"/* ; do
+  [ -d "${d}" ] && git --git-dir="${d}"/.git --work-tree="${d}" pull
+done
 
 # Update rust/cargo
-rustup update
+# rustup update
 
 # TODO
 # Update node version relink packages if required update node and npm/pnpm
