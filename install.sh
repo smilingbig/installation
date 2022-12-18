@@ -1,5 +1,9 @@
 #!/bin/bash 
 
+set -o errexit   # abort on nonzero exitstatus
+set -o nounset   # abort on unbound variable
+set -o pipefail  # don't hide errors within pipes
+
 export DOTFILES_DIR="$HOME/dotfiles"
 export DOTFILES_REPO="https://github.com/smilingbig/.dotfiles.git"
 export PROJECTS_DIR="$HOME/Repos/"

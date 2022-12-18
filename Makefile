@@ -25,3 +25,7 @@ remove: dockerfile
 	echo 'Not working from within Makefile currently, but if you run this command
 	itll work.'
 	docker rm -f $(docker ps -a | grep installtest | awk "{print $1}")
+
+readme_update:
+	echo '# List of TODOS \n --- \n' >> README.md
+	grep --no-filename -A 3 TODO *.sh >> README.md
