@@ -19,7 +19,7 @@ setup:
 # This doesn't work atm, not sure how to do this
 CONTAINER_ID = $(docker ps -a | grep installtest | awk '{print $1}')
 connect: 
-	docker exec --user test -it $(CONTAINER_ID) /bin/bash
+	docker exec -it $(CONTAINER_ID) /bin/bash
 
 remove: dockerfile
 	echo 'Not working from within Makefile currently, but if you run this command
@@ -27,5 +27,5 @@ remove: dockerfile
 	docker rm -f $(docker ps -a | grep installtest | awk "{print $1}")
 
 readme_update:
-	echo '# List of TODOS \n --- \n' >> README.md
+	echo '\n# List of TODOS \n --- \n' >> README.md
 	grep --no-filename -A 3 TODO *.sh >> README.md

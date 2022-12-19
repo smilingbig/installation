@@ -5,6 +5,7 @@ set -o nounset   # abort on unbound variable
 set -o pipefail  # don't hide errors within pipes
 
 export PROJECTS_DIR="$HOME/Repos/"
+export ZSH_PLUGIN_DIR="$HOME/.zsh"
 
 # TODO
 # Update on other os
@@ -29,3 +30,4 @@ done
 
 # TODO
 # Update node version relink packages if required update node and npm/pnpm
+# Also look into updating nvim plugins and tmux plugins in this update

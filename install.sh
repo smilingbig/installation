@@ -12,11 +12,13 @@ export ZSH_PLUGIN_DIR="$HOME/.zsh"
 function print_info {
   green='\033[0;32m'
   clear='\033[0m'
-  echo -e "\n${green}${1}${clear}\n" 
+  echo -e "${green}${1}${clear}" 
 }
 
+# TODO
+# Look into using the correct package managers here and not this janky command
 function is_installed {
-  [ "$(command -v "$1")" ]
+  [ -n "$(command -v "$1")" ]
 }
 
 function is_zshshell {
@@ -24,26 +26,26 @@ function is_zshshell {
 }
 
 function is_directory {
-  ! [ -d "$1" ]
+  [ -d "$1" ]
 }
 
-function setup_stow {
-  declare prevpwd
-  prevpwd=$(pwd)
+# function setup_stow {
+#   declare prevpwd
+#   prevpwd=$(pwd)
 
-  cd "$DOTFILES_DIR" || exit
+#   cd "$DOTFILES_DIR" || exit
 
-  print_line "Setup stow"
+#   print_info "Setup stow"
 
-  for d in * ; do
-    if is_directory "${d}"; then 
-      print_line "Setting up dotfiles for ${d}"
-      stow "${d}"
-    fi
-  done
+#   for d in * ; do
+#     if is_directory "${d}"; then 
+#       print_info "Setting up dotfiles for ${d}"
+#       stow "${d}"
+#     fi
+#   done
 
-  cd "$prevpwd" || exit
-}
+#   cd "$prevpwd" || exit
+# }
 
 function install_package {
 	local pkg=$1
@@ -84,6 +86,7 @@ install_package zsh
 if is_zshshell; then
   print_info "Already using zsh."
 else
+  print_info "Changing to zsh shell"
 	chsh -s "$(which zsh)"
 fi
 
@@ -92,6 +95,7 @@ fi
 if is_directory "$ZSH_PLUGIN_DIR"; then
   print_info "Already created ${ZSH_PLUGIN_DIR}"
 else
+  print_info "Creating zsh plugins folder"
 	mkdir "$ZSH_PLUGIN_DIR"
 fi
 
@@ -99,17 +103,32 @@ fi
 if is_directory "$PROJECTS_DIR"; then
   print_info "Already created ${PROJECTS_DIR}"
 else
+  print_info "Creating projects dir"
 	mkdir "$PROJECTS_DIR"
 fi
 
 # Zsh plugins
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"
-git clone https://github.com/zsh-users/zsh-history-substring-search "$ZSH_PLUGIN_DIR/zsh-history-substring-search"
-git clone https://github.com/sindresorhus/pure.git "$ZSH_PLUGIN_DIR/pure"
+if ! is_directory "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"; then
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_PLUGIN_DIR/zsh-syntax-highlighting"
+else
+  print_info "Already cloned zsh-syntax-highlighting"
+fi
+
+if ! is_directory "$ZSH_PLUGIN_DIR/zsh-history-substring-search"; then
+  git clone https://github.com/zsh-users/zsh-history-substring-search "$ZSH_PLUGIN_DIR/zsh-history-substring-search"
+else
+  print_info "Already cloned zsh-history-substring-search"
+fi
+
+if ! is_directory "$ZSH_PLUGIN_DIR/pure"; then
+  git clone https://github.com/sindresorhus/pure.git "$ZSH_PLUGIN_DIR/pure"
+else
+  print_info "Already cloned Pure"
+fi
 
 # Install kitty
 # TODO
-# I should look into installing all deps in a single go, but in first run let's
+# I should look into installing alg deps in a single go, but in first run let's
 # just do them sequentially.
 install_package kitty 
 
@@ -149,7 +168,7 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # Install rustup
 # Needed to install gcc-multilib to get support for rust compilation on older laptop
-install_package gcc-multilib
+# install_package gcc-multilib
 
 # TODO
 # Issue here with rust installation
@@ -176,13 +195,25 @@ install_package gcc-multilib
 if is_directory "$DOTFILES_DIR"; then
   print_info "Already created ${DOTFILES_DIR}"
 else
+  print_info "Creating dotfiles"
 	mkdir "$DOTFILES_DIR"
 fi
 
 git clone $DOTFILES_REPO "$DOTFILES_DIR"
 install_package stow 
 
-setup_stow 
+cd "$DOTFILES_DIR" || exit
+
+print_info "Setup stow"
+
+for d in * ; do
+  if is_directory "${d}"; then 
+    print_info "Setting up dotfiles for ${d}"
+    stow "${d}"
+  else
+    print_info "${d} Not a directory"
+  fi
+done
 
 sudo apt-get autoremove
 sudo apt-get clean

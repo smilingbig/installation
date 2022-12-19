@@ -4,16 +4,11 @@ set -o errexit   # abort on nonzero exitstatus
 set -o nounset   # abort on unbound variable
 set -o pipefail  # don't hide errors within pipes
 
-echo 'My home directory is'
-echo "$HOME"
-printf '\n'
-
 export DOTFILES_DIR="$HOME/dotfiles"
 export ZSH_PLUGIN_DIR="$HOME/.zsh"
 export PROJECTS_DIR="$HOME/Repos/"
 
-sudo apt-get remove -y git neovim zsh kitty ripgrep bat shellcheck docker htop \
-                       jq python3 ripgrep wget curl awscli gcc-multilib 
+sudo apt-get remove -y git neovim zsh kitty ripgrep bat shellcheck docker htop jq python3 ripgrep wget curl awscli gcc-multilib 
 
 sudo apt-get autoremove
 sudo apt-get clean
