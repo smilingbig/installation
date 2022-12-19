@@ -9,6 +9,11 @@ https://github.com/bats-core/bats-core
  --- 
 
 # TODO
+# Look into using the correct package managers here and not this janky command
+function is_installed {
+  [ -n "$(command -v "$1")" ]
+--
+# TODO
 # Group apt installs when everything is done
 # Maybe look into rolling up a docker instance so that I can test the installation scripts
 # Move different conditionals out to reusable functions
@@ -24,7 +29,7 @@ install_package neovim
 # Issue here with switching to zsh
 --
 # TODO
-# I should look into installing all deps in a single go, but in first run let's
+# I should look into installing alg deps in a single go, but in first run let's
 # just do them sequentially.
 install_package kitty 
 --
@@ -77,3 +82,4 @@ sudo apt-get upgrade
 --
 # TODO
 # Update node version relink packages if required update node and npm/pnpm
+# Also look into updating nvim plugins and tmux plugins in this update
