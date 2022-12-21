@@ -1,13 +1,46 @@
 #!/bin/bash 
 
+# http://redsymbol.net/articles/unofficial-bash-strict-mode/
 set -o errexit   # abort on nonzero exitstatus
 set -o nounset   # abort on unbound variable
-set -o pipefail  # don't hide errors within pipes
+set -euo pipefail  # don't hide errors within pipes
 
-export DOTFILES_DIR="$HOME/dotfiles"
-export DOTFILES_REPO="https://github.com/smilingbig/.dotfiles.git"
-export PROJECTS_DIR="$HOME/Repos/"
-export ZSH_PLUGIN_DIR="$HOME/.zsh"
+# Print a helpful message if a pipeline with non-zero exit code causes the
+# script to exit as described above.
+trap 'echo "Aborting due to errexit on line $LINENO. Exit code: $?" >&2' ERR
+
+# Allow the above trap be inherited by all functions in the script.
+#
+# Short form: set -E
+set -o errtrace
+
+# Set $IFS to only newline and tab.
+#
+# http://www.dwheeler.com/essays/filenames-in-shell.html
+IFS=$'\n\t'
+
+###############################################################################
+# Globals
+###############################################################################
+
+# $_ME
+#
+# This program's basename.
+_ME="$(basename "${0}")"
+
+# $_VERSION
+#
+# Manually set this to to current version of the program. Adhere to the
+# semantic versioning specification: http://semver.org
+_VERSION="0.1.0-alpha"
+
+print_line "$_ME"
+
+DOTFILES_DIR="$HOME/dotfiles"
+DOTFILES_REPO="https://github.com/smilingbig/.dotfiles.git"
+PROJECTS_DIR="$HOME/Repos/"
+ZSH_PLUGIN_DIR="$HOME/.zsh"
+
 
 function print_info {
   green='\033[0;32m'
