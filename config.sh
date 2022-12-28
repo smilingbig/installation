@@ -112,6 +112,7 @@ export __PACKAGES=(
   curl
   tmux
   stow
+  gcc-multilib
 )
 
 export __CARGO_PACKAGES=(
@@ -206,9 +207,6 @@ _remove_packages() {
   done
 }
 
-# TODO
-# I think there might be an issue with this loop only creating first element in
-# array
 _make_directories() {
   for __d in "$@"
   do
@@ -265,8 +263,6 @@ _update_repos() {
   done
 }
 
-# TODO
-# Looks like there is an issue here creating a ~ directory to stow as well
 _configure_dotfiles() {
   local __req=(
     stow
@@ -351,6 +347,7 @@ _remove_dotfiles() {
 _install_rust() {
   local __req=(
     git
+    gcc-multilib
   )
   _install_packages "${__req[@]}"
 
@@ -361,9 +358,9 @@ _install_rust() {
 
   bash "$1"/rustup/rustup-init.sh -y 
 
-  # if _dir_present "$HOME/.cargo/env"; then
-  . "$HOME/.cargo/env"
-  # fi
+  if _dir_present "$HOME/.cargo/env"; then
+    . "$HOME/.cargo/env"
+  fi
 
   cargo install cargo-update
 }
