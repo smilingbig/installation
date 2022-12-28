@@ -330,7 +330,8 @@ _remove_dotfiles() {
   _debug printf "CDing into %s" "$1"
 
   if !  _dir_present "${1}"; then 
-    _exit_1 printf "Dotfiles directory isn't setup, can't remove configs"
+    _debug printf "Dotfiles directory isn't setup, can't remove configs"
+    return
   fi
 
   cd "$1"
