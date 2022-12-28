@@ -95,6 +95,8 @@ set -o pipefail
 # http://www.dwheeler.com/essays/filenames-in-shell.html
 IFS=$'\n\t'
 
+export HOME="~"
+
 export __PACKAGES=(
   git
   neovim
