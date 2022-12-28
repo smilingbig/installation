@@ -376,7 +376,7 @@ _update_rust() {
   fi
 
   _debug printf "Updating Rust via rustup"
-  rustup --update
+  rustup update
   _debug printf "Updating all packages installed via cargo"
   cargo install-update -a
 }
