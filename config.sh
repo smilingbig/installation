@@ -409,7 +409,7 @@ _remove_cargo_packages() {
   for __p in "$@"
   do
     _debug printf "Removing %s \\n" "${__p}"
-    cargo uninstall "${__p}"
+    cargo uninstall "${__p}" || true
   done
 }
 
