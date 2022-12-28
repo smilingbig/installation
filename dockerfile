@@ -11,11 +11,11 @@ RUN apt-get install -y sudo bash ca-certificates
 ADD install.sh /
 ADD uninstall.sh /
 ADD update.sh /
-ADD main.sh /
+ADD config.sh /
 RUN chmod +x /install.sh
 RUN chmod +x /uninstall.sh
 RUN chmod +x /update.sh
-RUN chmod +x /main.sh
+RUN chmod +x /config.sh
 
 EXPOSE 69
 

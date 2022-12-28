@@ -155,17 +155,26 @@ _present() {
   [[ -n "${1:-}" ]]
 }
 
+_exit_1() {
+  {
+    printf "%s " "$(tput setaf 1)!$(tput sgr0)"
+    "${@}"
+  } 1>&2
+  exit 1
+}
 
 _clean_packages() {
   _debug printf "Cleaning up unrequired deps"
-  sudo apt-get autoremove
-  sudo apt-get clean
-  sudo apt-get autoclean
+  sudo apt-get -y autoremove
+  sudo apt-get -y clean
+  sudo apt-get -y autoclean
 }
 
 _update_packages() {
   _debug printf "Updating packages"
-  sudo apt update
+  sudo apt-get update
+  sudo apt-get upgrade
+
   trap _clean_packages EXIT
 }
 
@@ -220,10 +229,32 @@ _remove_directories() {
 _clone_repos() {
   _make_directories "$1"
 
-  for __c in $2
+  for __c in "${@:2}"
   do
-    _debug printf "Cloning: %s into: %s \\n" "${__c}" "${1}"
-    git clone "${__c}" "${1}"
+    local target_dir
+    target_dir="${1}/$(basename "${__c}")"
+    _debug printf "Cloning: %s into: %s \\n" "${__c}" "${target_dir}"
+    git clone "${__c}" "${target_dir}"
+  done
+}
+
+_update_repos() {
+  if ! _dir_present "${1}"; then
+    _debug printf "Can't update repos because %s isn't made." "${1}"
+    _exit_1 printf "Can't update repos because %s isn't made." "${1}"
+  fi
+
+  for __c in "${@:2}"
+  do
+    local target_dir
+    target_dir="${1}/$(basename "${__c}")"
+
+    if ! _dir_present "${target_dir}"; then
+      _debug printf "Directory: %s not found" "${target_dir}"
+    fi
+
+    _debug printf "Updating: %s in: %s \\n" "${target_dir}" "${1}"
+    git --git-dir="${target_dir}"/.git --work-tree="${target_dir}" pull
   done
 }
 
