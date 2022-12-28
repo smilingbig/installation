@@ -370,12 +370,12 @@ _remove_rust() {
 _install_cargo_packages() {
   for __p in "$@"
   do
-    if ! _command_exists "${__p}"; then
-      _debug printf "Installing %s \\n" "${__p}"
-      cargo install "${__p}"
-    else
-      _debug printf "Package: %s already installed \\n" "${__p}"
-    fi
+    # if ! _command_exists "${__p}"; then
+  _debug printf "Installing %s \\n" "${__p}"
+  cargo install "${__p}"
+    # else
+    #   _debug printf "Package: %s already installed \\n" "${__p}"
+    # fi
   done
 }
 
