@@ -95,7 +95,7 @@ set -o pipefail
 # http://www.dwheeler.com/essays/filenames-in-shell.html
 IFS=$'\n\t'
 
-export HOME="~"
+# export HOME="~"
 
 export __PACKAGES=(
   git
@@ -212,12 +212,12 @@ _remove_packages() {
 _make_directories() {
   for __d in "$@"
   do
-    # if ! _dir_present "${__d}"; then
-    _debug printf "Make dir: %s\\n" "${__d}"
-    mkdir -p "${__d}" || continue
-    # else
-    #   _debug printf "Directory: %s already made \\n" "${__d}"
-    # fi
+    if ! _dir_present "${__d}"; then
+      _debug printf "Make dir: %s\\n" "${__d}"
+      mkdir -p "${__d}" || continue
+    else
+      _debug printf "Directory: %s already made \\n" "${__d}"
+    fi
   done
 }
 
