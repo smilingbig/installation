@@ -413,4 +413,32 @@ _remove_cargo_packages() {
   done
 }
 
-export _USE_DEBUG=1
+_setup_zsh() {
+  local __req=(
+    zsh
+  )
+
+  _install_packages "${__req[@]}"
+
+  _debug printf "Changing shell to zsh"
+  chsh -s "$(which zsh)"
+
+  . "$HOME/.zshrc"
+
+  _debug printf "$SHELL"
+}
+
+_setup_bash() {
+  _debug printf "Changing shell to bash"
+  chsh -s "$(which bash)"
+
+  . "$HOME/.bashrc"
+
+  _debug printf "$SHELL"
+}
+
+# TODO
+# Install and change to zsh
+# Figure out a way to install without having to clone repo
+
+export _USE_DEBUG=0
