@@ -188,7 +188,7 @@ _install_packages() {
   do
     if ! _command_exists "${__p}"; then
     _debug printf "Installing %s \\n" "${__p}"
-    sudo apt-get install -y "${__p}"
+    sudo apt-get install -y "${__p}" || true
     else
       _debug printf "Package: %s already installed \\n" "${__p}"
     fi
@@ -358,14 +358,23 @@ _install_rust() {
 
   bash "$1"/rustup/rustup-init.sh -y 
 
-  if _dir_present "$HOME/.cargo/env"; then
-    . "$HOME/.cargo/env"
-  fi
+  . "$HOME/.cargo/env"
+  # if _dir_present "$HOME/.cargo/env"; then
+  # fi
 
   cargo install cargo-update
 }
 
 _update_rust() {
+  if ! _command_exists rustup; then
+    _debug printf "Rustup is not installed"
+    return
+  fi
+  if ! _command_exists cargo; then
+    _debug printf "Cargo is not installed"
+    return
+  fi
+
   _debug printf "Updating Rust via rustup"
   rustup --update
   _debug printf "Updating all packages installed via cargo"
@@ -373,19 +382,26 @@ _update_rust() {
 }
 
 _remove_rust() {
+  _remove_directories "$1/rustup"
+  if ! _command_exists rustup; then
+    _debug printf "Rustup is not installed"
+    return
+  fi
+
   _debug printf "Removing Rust via rustup"
   rustup self uninstall
 }
 
 _install_cargo_packages() {
+  if ! _command_exists cargo; then
+    _debug printf "Cargo is not installed"
+    return
+  fi
+
   for __p in "$@"
   do
-    # if ! _command_exists "${__p}"; then
-  _debug printf "Installing %s \\n" "${__p}"
-  cargo install "${__p}"
-    # else
-    #   _debug printf "Package: %s already installed \\n" "${__p}"
-    # fi
+    _debug printf "Installing %s \\n" "${__p}"
+    cargo install "${__p}" || true
   done
 }
 
