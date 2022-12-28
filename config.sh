@@ -106,11 +106,14 @@ export __PACKAGES=(
   docker
   htop
   jq
-  python3
   wget
   curl
   tmux
   stow
+)
+
+export __CARGO_PACKAGES=(
+  git-delta
 )
 
 export __DIRS=(
@@ -127,7 +130,6 @@ export __ZSH_PLUGINS=(
 )
 
 export __TMUX_PLUGINS=()
-export __CARGO_PLUGINS=()
 
 __DEBUG_COUNTER=0
 _debug() {
@@ -333,6 +335,54 @@ _remove_dotfiles() {
   _remove_packages stow
 
   _debug printf "Stow completed."
+}
+
+_install_rust() {
+  local __req=(
+    git
+  )
+  _install_packages "${__req[@]}"
+
+  _make_directories "$1"
+
+  _debug printf "Cloning rustup for installation"
+  git clone "https://github.com/rust-lang/rustup" "$1/rustup" 
+
+  bash "$1"/rustup/rustup-init.sh -y 
+
+  cargo install cargo-update
+}
+
+_update_rust() {
+  _debug printf "Updating Rust via rustup"
+  rustup --update
+  _debug printf "Updating all packages installed via cargo"
+  cargo install-update -a
+}
+
+_remove_rust() {
+  _debug printf "Removing Rust via rustup"
+  rustup self uninstall
+}
+
+_install_cargo_packages() {
+  for __p in "$@"
+  do
+    if ! _command_exists "${__p}"; then
+      _debug printf "Installing %s \\n" "${__p}"
+      cargo install "${__p}"
+    else
+      _debug printf "Package: %s already installed \\n" "${__p}"
+    fi
+  done
+}
+
+_remove_cargo_packages() {
+  for __p in "$@"
+  do
+    _debug printf "Removing %s \\n" "${__p}"
+    cargo uninstall "${__p}"
+  done
 }
 
 export _USE_DEBUG=1
