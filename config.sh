@@ -258,4 +258,81 @@ _update_repos() {
   done
 }
 
+_configure_dotfiles() {
+  local __req=(
+    stow
+    git
+  )
+
+  _debug printf "Setup dotfiles." 
+
+  _make_directories "${1}"
+  _install_packages "${__req[@]}"
+
+  _debug printf "Cloning %s into %s" "${2}" "${1}"
+  git clone "${2}" "${1}"
+
+  _debug printf "CDing into %s" "$1"
+
+  cd "$1"
+
+  for __dir in * ; do
+    if _dir_present "${__dir}"; then 
+      _debug printf "Setting up dotfiles for: %s" "${__dir}"
+      stow "${__dir}"
+    fi
+  done
+
+  _debug printf "Stow completed."
+}
+
+_update_dotfiles() {
+  local __req=(
+    stow
+    git
+  )
+
+  if ! _dir_present "$1"; then
+    _debug printf "Dotfiles folder required."
+    _exit_1 printf "Dotfiles folder required."
+  fi
+
+  _debug printf "Updating dotfiles" 
+  _install_packages "${__req[@]}"
+
+  _debug printf "Updating %s" "$1" 
+  git --git-dir="${1}"/.git --work-tree="${1}" pull
+
+  cd "$1"
+
+  for __dir in * ; do
+    if _dir_present "${__dir}"; then 
+      _debug printf "Restowing: %s" "${__dir}"
+      stow --restow "${__dir}"
+    fi
+  done
+
+  _debug printf "stow updated"
+}
+
+_remove_dotfiles() {
+  _debug printf "Remove dotfiles" 
+
+  _debug printf "CDing into %s" "$1"
+
+  cd "$1"
+
+  for __dir in * ; do
+    if _dir_present "${__dir}"; then 
+      _debug printf "Removing dotfiles for: %s" "${__dir}"
+      stow --delete "${__dir}"
+    fi
+  done
+
+  _remove_directories "${1}"
+  _remove_packages stow
+
+  _debug printf "Stow completed."
+}
+
 export _USE_DEBUG=1
