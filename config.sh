@@ -185,24 +185,24 @@ _update_packages() {
 _install_packages() {
   for __p in "$@"
   do
-    if ! _command_exists "${__p}"; then
-      _debug printf "Installing %s \\n" "${__p}"
-      sudo apt-get install -y "${__p}"
-    else
-      _debug printf "Package: %s already installed \\n" "${__p}"
-    fi
+    # if ! _command_exists "${__p}"; then
+    _debug printf "Installing %s \\n" "${__p}"
+    sudo apt-get install -y "${__p}"
+    # else
+    #   _debug printf "Package: %s already installed \\n" "${__p}"
+    # fi
   done
 }
 
 _remove_packages() {
   for __r in "$@"
   do
-    if _command_exists "${__r}"; then
-      _debug printf "Removing %s\\n" "${__r}"
-      sudo apt-get remove -y "${__r}"
-    else
-      _debug printf "Package: %s wasn't installed \\n" "${__r}"
-    fi
+    # if _command_exists "${__r}"; then
+    _debug printf "Removing %s\\n" "${__r}"
+    sudo apt-get remove -y "${__r}"
+    # else
+    #   _debug printf "Package: %s wasn't installed \\n" "${__r}"
+    # fi
   done
 }
 
