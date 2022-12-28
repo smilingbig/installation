@@ -113,6 +113,8 @@ export __PACKAGES=(
   tmux
   stow
   gcc-multilib
+  libssl-dev
+  pkg-config
 )
 
 export __CARGO_PACKAGES=(
@@ -359,8 +361,6 @@ _install_rust() {
   bash "$1"/rustup/rustup-init.sh -y 
 
   . "$HOME/.cargo/env"
-  # if _dir_present "$HOME/.cargo/env"; then
-  # fi
 
   cargo install cargo-update
 }
