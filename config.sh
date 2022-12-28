@@ -206,6 +206,9 @@ _remove_packages() {
   done
 }
 
+# TODO
+# I think there might be an issue with this loop only creating first element in
+# array
 _make_directories() {
   for __d in "$@"
   do
@@ -262,6 +265,8 @@ _update_repos() {
   done
 }
 
+# TODO
+# Looks like there is an issue here creating a ~ directory to stow as well
 _configure_dotfiles() {
   local __req=(
     stow
@@ -351,6 +356,10 @@ _install_rust() {
   git clone "https://github.com/rust-lang/rustup" "$1/rustup" 
 
   bash "$1"/rustup/rustup-init.sh -y 
+
+  if _dir_present "$HOME/.cargo/env"; then
+    source "$HOME/.cargo/env"
+  fi
 
   cargo install cargo-update
 }
