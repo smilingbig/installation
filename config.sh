@@ -185,12 +185,12 @@ _update_packages() {
 _install_packages() {
   for __p in "$@"
   do
-    # if ! _command_exists "${__p}"; then
+    if ! _command_exists "${__p}"; then
     _debug printf "Installing %s \\n" "${__p}"
     sudo apt-get install -y "${__p}"
-    # else
-    #   _debug printf "Package: %s already installed \\n" "${__p}"
-    # fi
+    else
+      _debug printf "Package: %s already installed \\n" "${__p}"
+    fi
   done
 }
 
@@ -327,13 +327,12 @@ _update_dotfiles() {
 _remove_dotfiles() {
   _debug printf "Remove dotfiles" 
 
-  _debug printf "CDing into %s" "$1"
-
-  if !  _dir_present "${1}"; then 
+  if ! _dir_present "${1}"; then 
     _debug printf "Dotfiles directory isn't setup, can't remove configs"
     return
   fi
 
+  _debug printf "CDing into %s" "$1"
   cd "$1"
 
   for __dir in * ; do
@@ -362,9 +361,9 @@ _install_rust() {
 
   bash "$1"/rustup/rustup-init.sh -y 
 
-  if _dir_present "$HOME/.cargo/env"; then
-    source "$HOME/.cargo/env"
-  fi
+  # if _dir_present "$HOME/.cargo/env"; then
+  . "$HOME/.cargo/env"
+  # fi
 
   cargo install cargo-update
 }
