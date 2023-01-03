@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ###############################################################################
 # Strict Mode
 ###############################################################################
@@ -108,6 +110,7 @@ export __PACKAGES=(
   docker
   htop
   jq
+  fzf
   wget
   curl
   tmux
@@ -115,6 +118,8 @@ export __PACKAGES=(
   gcc-multilib
   libssl-dev
   pkg-config
+  brave-browser
+  google-chrome
 )
 
 export __CARGO_PACKAGES=(
@@ -170,42 +175,74 @@ _exit_1() {
   exit 1
 }
 
+_is_macos() {
+	[[ $(uname -s) == 'Darwin' ]]
+}
+
 _clean_packages() {
   _debug printf "Cleaning up unrequired deps"
-  sudo apt-get -y autoremove
-  sudo apt-get -y clean
-  sudo apt-get -y autoclean
+	if _is_macos; then
+		brew autoremove
+		brew cleanup
+	else
+		sudo apt-get -y autoremove
+		sudo apt-get -y clean
+		sudo apt-get -y autoclean
+	fi
 }
 
 _update_packages() {
   _debug printf "Updating packages"
-  sudo apt-get update
-  sudo apt-get upgrade
+
+	if _is_macos; then
+		brew update
+		brew upgrade
+	else
+		sudo apt-get update
+		sudo apt-get upgrade
+	fi
 
   trap _clean_packages EXIT
 }
 
 _install_packages() {
+	if _is_macos; then
+		if ! _command_exists brew; then
+			_debug printf "Brew is not installed, installing now \\n"
+			_install_brew
+		fi
+	fi
+
   for __p in "$@"
   do
     if ! _command_exists "${__p}"; then
     _debug printf "Installing %s \\n" "${__p}"
-    sudo apt-get install -y "${__p}" || true
+		if _is_macos; then
+			brew install "${__p}" || true
+		else
+			sudo apt-get install -y "${__p}" || true
+		fi
     else
       _debug printf "Package: %s already installed \\n" "${__p}"
     fi
   done
 }
 
+# TODO
+# _command_exists not tested here
 _remove_packages() {
   for __r in "$@"
   do
-    # if _command_exists "${__r}"; then
-    _debug printf "Removing %s\\n" "${__r}"
-    sudo apt-get remove -y "${__r}"
-    # else
-    #   _debug printf "Package: %s wasn't installed \\n" "${__r}"
-    # fi
+    if _command_exists "${__r}"; then
+			_debug printf "Removing %s\\n" "${__r}"
+			if _is_macos; then
+				brew uninstall "${__r}"
+			else
+				sudo apt-get remove -y "${__r}"
+			fi
+    else
+      _debug printf "Package: %s wasn't installed \\n" "${__r}"
+    fi
   done
 }
 
@@ -234,7 +271,11 @@ _remove_directories() {
 }
 
 _clone_repos() {
+  local __req=(
+    git
+  )
   _make_directories "$1"
+  _install_packages "${__req[@]}"
 
   for __c in "${@:2}"
   do
@@ -437,8 +478,13 @@ _setup_bash() {
   _debug printf "$SHELL"
 }
 
-# TODO
-# Install and change to zsh
-# Figure out a way to install without having to clone repo
+_install_brew() {
+	if _is_macos; then
+		_debug printf "Installing brew"
+		bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	else
+		_debug printf "Brew not required"
+	fi
+}
 
-export _USE_DEBUG=0
+export _USE_DEBUG=1

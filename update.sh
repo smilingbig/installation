@@ -1,3 +1,5 @@
+#!/bin/bash
+
 source ./config.sh
 
 _update_packages

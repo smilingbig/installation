@@ -1,3 +1,5 @@
+#!/bin/bash
+
 source ./config.sh
 
 _remove_dotfiles "$HOME/dotfiles"
