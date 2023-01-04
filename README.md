@@ -19,3 +19,4 @@ Some scripts for setting up and updating development enviroment for debian.
 - Maybe look into using zplug for zsh plugins otherwise just use oh my zsh
   plugins directly for git aliases and also remove the custom git aliases I
   copied in, no point managing them myself
+- Added zplug instead of manually installing plugins, so will need to remove the zsh plugin part of installation

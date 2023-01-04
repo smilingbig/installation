@@ -110,6 +110,7 @@ export __PACKAGES=(
   htop
   jq
   fzf
+	zplug
   wget
   curl
   tmux
