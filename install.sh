@@ -3,10 +3,12 @@
 source ./config.sh
 
 _update_packages
+_install_packages git zsh
 _install_packages "${__PACKAGES[@]}"
 _make_directories "${__DIRS[@]}"
-_clone_repos "$HOME/.zsh" "${__ZSH_PLUGINS[@]}"
+_clone_repos "$HOME/.zsh" "${__ZSH_PLUGINS[0]}"
+_clone_repos "$HOME/.zsh" "${__ZSH_PLUGINS[1]}"
+_clone_repos "$HOME/.zsh" "${__ZSH_PLUGINS[2]}"
 _configure_dotfiles "$HOME/dotfiles" "https://github.com/smilingbig/.dotfiles.git"
 _install_rust "$HOME/Repos"
 _install_cargo_packages "${__CARGO_PACKAGES[@]}"
-_setup_zsh

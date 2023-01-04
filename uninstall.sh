@@ -8,4 +8,3 @@ _remove_cargo_packages "${__CARGO_PACKAGES[@]}"
 _remove_rust "$HOME/Repos"
 _remove_directories "${__DIRS[@]}"
 _clean_packages
-_setup_bash

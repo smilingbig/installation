@@ -100,13 +100,12 @@ IFS=$'\n\t'
 # export HOME="~"
 
 export __PACKAGES=(
-  git
   neovim
-  zsh
   kitty
   ripgrep
   bat
   shellcheck
+  blueutil
   docker
   htop
   jq
@@ -118,6 +117,7 @@ export __PACKAGES=(
   gcc-multilib
   libssl-dev
   pkg-config
+	tldr
   brave-browser
   google-chrome
 )
@@ -192,11 +192,19 @@ _clean_packages() {
 }
 
 _update_packages() {
+	if _is_macos; then
+		if ! _command_exists brew; then
+			_debug printf "Brew is not installed, installing now \\n"
+			_install_brew
+		fi
+	fi
+
   _debug printf "Updating packages"
 
 	if _is_macos; then
 		brew update
 		brew upgrade
+		brew analytics off
 	else
 		sudo apt-get update
 		sudo apt-get upgrade
@@ -206,12 +214,6 @@ _update_packages() {
 }
 
 _install_packages() {
-	if _is_macos; then
-		if ! _command_exists brew; then
-			_debug printf "Brew is not installed, installing now \\n"
-			_install_brew
-		fi
-	fi
 
   for __p in "$@"
   do
@@ -233,16 +235,16 @@ _install_packages() {
 _remove_packages() {
   for __r in "$@"
   do
-    if _command_exists "${__r}"; then
+    #if _command_exists "${__r}"; then
 			_debug printf "Removing %s\\n" "${__r}"
 			if _is_macos; then
-				brew uninstall "${__r}"
+				brew uninstall "${__r}" || true
 			else
-				sudo apt-get remove -y "${__r}"
+				sudo apt-get remove -y "${__r}" || true
 			fi
-    else
-      _debug printf "Package: %s wasn't installed \\n" "${__r}"
-    fi
+    #else
+    #  _debug printf "Package: %s wasn't installed \\n" "${__r}"
+    #fi
   done
 }
 
@@ -480,8 +482,10 @@ _setup_bash() {
 
 _install_brew() {
 	if _is_macos; then
-		_debug printf "Installing brew"
+		_debug printf "Installing xcode-select if required and brew"
+		xcode-select --install || continue
 		bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+		brew analytics off
 	else
 		_debug printf "Brew not required"
 	fi
