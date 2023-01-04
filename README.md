@@ -2,6 +2,7 @@
 Some scripts for setting up and updating development enviroment for debian.
 
 # TODO
+[] - Need to retest everything on debian
 [x] - port to work on macos
 [] - create a list of what failed to be displayed at end of execution
 [x] - add in non development application required

@@ -113,6 +113,8 @@ export __PACKAGES=(
 	zplug
   wget
   curl
+	terraform
+	volta
   tmux
   stow
   gcc-multilib
