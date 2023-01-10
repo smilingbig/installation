@@ -13,3 +13,4 @@ _clone_repos "$HOME/.tmux/plugins" "https://github.com/tmux-plugins/tpm"
 _configure_dotfiles "$HOME/dotfiles" "https://github.com/smilingbig/.dotfiles.git"
 _install_rust "$HOME/Repos"
 _install_cargo_packages "${__CARGO_PACKAGES[@]}"
+_install_pnpm

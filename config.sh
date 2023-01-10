@@ -114,7 +114,6 @@ export __PACKAGES=(
   wget
   curl
 	terraform
-	pnpm
   tmux
   stow
   gcc-multilib
@@ -515,5 +514,26 @@ _update_tmux_plugins() {
 		_debug printf "Tmux required do updates"
 	fi
 }
+
+_install_pnpm() {
+	_debug printf "Installing pnpm"
+	curl -fsSL https://get.pnpm.io/install.sh | sh -
+	_debug printf "Successfully installed"
+}
+
+_update_pnpm() {
+  if _command_exists pnpm; then
+		_debug printf "Updating pnpm from $(pnpm --version)"
+		pnpm add -g pnpm
+		_debug printf "Update pnpm to $(pnpm --version)"
+	else
+		_debug printf "pnpm not installed, couldn't udpate"
+	fi
+}
+
+# https://pnpm.io/uninstall
+# _uninstall_pnpm() {
+#
+# }
 
 export _USE_DEBUG=1
