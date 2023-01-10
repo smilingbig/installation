@@ -114,7 +114,7 @@ export __PACKAGES=(
   wget
   curl
 	terraform
-	volta
+	pnpm
   tmux
   stow
   gcc-multilib
@@ -123,6 +123,8 @@ export __PACKAGES=(
 	tldr
   brave-browser
   google-chrome
+	yarn
+	dict
 )
 
 export __CARGO_PACKAGES=(
@@ -491,6 +493,26 @@ _install_brew() {
 		brew analytics off
 	else
 		_debug printf "Brew not required"
+	fi
+}
+
+# TODO
+# This needs testing
+_update_nvim_plugins() {
+  if _command_exists nvim; then
+		_debug printf "Updating nvim plugins and treesitter grammars"
+		nvim --headless -c ':PackerSync' +qall
+		nvim --headless -c ':TSUpdate' +qall
+	else
+		_debug printf "Nvim required do updates"
+	fi
+}
+
+_update_tmux_plugins() {
+  if _command_exists tmux; then
+		bash ~/.tmux/plugins/tpm/scripts/install_plugins.sh
+	else
+		_debug printf "Tmux required do updates"
 	fi
 }
 
